@@ -9,20 +9,20 @@ class RemoteCommunication:
         self.pon_p = None
 
     def start_network(self):
-        self.pon_p = subprocess.Popen(['sudo', 'pon'])
-        time.sleep(5)
+        self.pon_p = subprocess.Popen(['sudo', 'pon'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-        # Check if ppp0 is created
         while True:
-            r = subprocess.Popen(['ip', 'addr', 'show'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            stdout, stderr = r.communicate()
-            assert isinstance(stdout, bytes)
-            if "ppp0" in stdout.decode("utf-8"):
-                # Create network route
+            time.sleep(5)
+            stdout, stderr = self.pon_p.communicate()
+            output = stdout.decode('utf-8')
+            if "failed" in output:
+                self.pon_p = subprocess.Popen(['sudo', 'pon'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+            # Check if ppp0 exists
+            adapter_check = subprocess.check_output(['ip', 'addr', 'show'])
+            if "ppp0" in adapter_check.decode('utf-8'):  # If ppp0 exists, create route and end
                 subprocess.call(['sudo', 'route', 'add', '-net', '0.0.0.0', 'ppp0'])
-                break
-            else:
-                time.sleep(5)
+                return
 
     def stop_network(self):
         if self.pon_p is not None:

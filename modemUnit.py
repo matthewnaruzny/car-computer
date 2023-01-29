@@ -15,7 +15,7 @@ class RemoteCommunication:
         # Check if ppp0 is created
         r = subprocess.Popen(['ip', 'addr', 'show'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         stdout, stderr = r.communicate()
-        assert isinstance(stdout[0], bytes)
+        assert isinstance(stdout, bytes)
         if "ppp0" in stdout.decode("utf-8"):
             # Create network route
             subprocess.call(['sudo', 'route', 'add', '-net', '"0.0.0.0"', 'ppp0'])

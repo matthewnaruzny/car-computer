@@ -13,13 +13,16 @@ class RemoteCommunication:
         time.sleep(5)
 
         # Check if ppp0 is created
-        r = subprocess.Popen(['ip', 'addr', 'show'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout, stderr = r.communicate()
-        assert isinstance(stdout, bytes)
-        if "ppp0" in stdout.decode("utf-8"):
-            # Create network route
-            subprocess.call(['sudo', 'route', 'add', '-net', '"0.0.0.0"', 'ppp0'])
-            self.pon_p = None
+        while True:
+            r = subprocess.Popen(['ip', 'addr', 'show'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, stderr = r.communicate()
+            assert isinstance(stdout, bytes)
+            if "ppp0" in stdout.decode("utf-8"):
+                # Create network route
+                subprocess.call(['sudo', 'route', 'add', '-net', '0.0.0.0', 'ppp0'])
+                break
+            else:
+                time.sleep(5)
 
     def stop_network(self):
         if self.pon_p is not None:

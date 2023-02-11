@@ -1,11 +1,17 @@
 import subprocess
 import threading
 import time
+from pyVoIP.VoIP import VoIPPhone, InvalidStateError
+
+import config
+from config import sip_config
 
 
 class RemoteCommunication:
 
     def __init__(self):
+        self.t_watch = None
+        self.phone = None
         self.pon_p = None
 
     def start_network(self):
@@ -28,11 +34,29 @@ class RemoteCommunication:
             subprocess.call(['sudo', 'poff'])
             self.pon_p = None
 
+    def start_tunnel(self):
+        subprocess.call(config.tunnel_config['start_cmd'].split())
+        self.t_watch = threading.Thread(target=self.watch_tunnel)
+        self.t_watch.start()
+
+    def watch_tunnel(self):
+        ssh_check = subprocess.check_output(['sudo', 'lsof', '-i', '-n', '|', 'egrep', "'\<ssh>\'"])
+        if config.tunnel_config['check_ip'] not in ssh_check:
+            self.start_tunnel()
+        time.sleep(10)
+
     def send(self, payload):
         pass
 
-    def start_call(self):
+    def sip_connect(self):
+        self.phone = VoIPPhone(sip_config['sip_host'], sip_config['sip_port'],
+                               sip_config['sip_username'], sip_config['sip_password'])
+
+    def start_call(self, number):
         pass
 
-    def receive_call(self):
-        pass
+    def receive_call(self, call):
+        try:
+            call.answer()
+        except InvalidStateError:
+            print("Error Answering Call")

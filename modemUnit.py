@@ -35,6 +35,7 @@ class RemoteCommunication:
             self.pon_p = None
 
     def start_tunnel(self):
+        print("Starting Tunnel")
         subprocess.call(config.tunnel_config['start_cmd'].split())
         self.t_watch = threading.Thread(target=self.watch_tunnel)
         self.t_watch.start()
@@ -42,6 +43,7 @@ class RemoteCommunication:
     def watch_tunnel(self):
         ssh_check = subprocess.check_output(['sudo', 'lsof', '-i', '-n'])
         if config.tunnel_config['check_ip'] not in ssh_check:
+            print("Restarting Tunnel")
             self.start_tunnel()
         time.sleep(10)
 

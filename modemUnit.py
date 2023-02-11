@@ -40,7 +40,7 @@ class RemoteCommunication:
         self.t_watch.start()
 
     def watch_tunnel(self):
-        ssh_check = subprocess.check_output(['sudo', 'lsof', '-i', '-n', '|', 'egrep', "'\<ssh>\'"])
+        ssh_check = subprocess.check_output(['sudo', 'lsof', '-i', '-n'])
         if config.tunnel_config['check_ip'] not in ssh_check:
             self.start_tunnel()
         time.sleep(10)

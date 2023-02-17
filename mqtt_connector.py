@@ -26,9 +26,11 @@ class MQTTController:
         # Process Commands
         if cmd['unit'] == 'modem':
             if cmd['cmd'] == 'up':
+                print('Modem Up')
                 self.publish(self.default_topic + '/status', 'Modem Up')
                 self.remote.start_network()
             if cmd['cmd'] == 'down:':
+                print('Modem Down')
                 self.publish(self.default_topic + '/status', 'Modem Down')
                 self.remote.stop_network()
 

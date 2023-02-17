@@ -29,7 +29,7 @@ class MQTTController:
                 print('Modem Up')
                 self.publish(self.default_topic + '/status', 'Modem Up')
                 self.remote.start_network()
-            if cmd['cmd'] == 'down:':
+            if cmd['cmd'] == 'down':
                 print('Modem Down')
                 self.publish(self.default_topic + '/status', 'Modem Down')
                 self.remote.stop_network()

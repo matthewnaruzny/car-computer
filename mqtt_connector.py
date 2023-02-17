@@ -33,6 +33,9 @@ class MQTTController:
                 except subprocess.CalledProcessError:
                     self.publish(msg.topic, "Error Executing", qos=2)
 
+            if cmd['unit'] == 'ping':
+                self.publish(msg.topic, "Pong", qos=2)
+
             if cmd['unit'] == 'modem':
                 if cmd['cmd'] == 'up':
                     print('Modem Up')

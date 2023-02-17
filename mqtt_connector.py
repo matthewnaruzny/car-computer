@@ -1,3 +1,5 @@
+import subprocess
+
 import paho.mqtt.client as mqtt
 from config import mqtt_config
 from modemUnit import RemoteCommunication
@@ -21,18 +23,21 @@ class MQTTController:
     def on_message(self, client, userdata, msg):
         print("New Msg: " + msg.payload.decode('utf-8'))
 
-        cmd = json.loads(msg.payload.decode('utf-8'))
+        try:
+            cmd = json.loads(msg.payload.decode('utf-8'))
+            # Process Commands
+            if cmd['unit'] == 'modem':
+                if cmd['cmd'] == 'up':
+                    print('Modem Up')
+                    self.publish(msg.topic, 'Modem Up', qos=2)
+                    self.remote.start_network()
+                if cmd['cmd'] == 'down':
+                    print('Modem Down')
+                    self.publish(msg.topic, 'Modem Down', qos=2)
+                    self.remote.stop_network()
 
-        # Process Commands
-        if cmd['unit'] == 'modem':
-            if cmd['cmd'] == 'up':
-                print('Modem Up')
-                self.publish(self.default_topic + '/status', 'Modem Up')
-                self.remote.start_network()
-            if cmd['cmd'] == 'down':
-                print('Modem Down')
-                self.publish(self.default_topic + '/status', 'Modem Down')
-                self.remote.stop_network()
+        except json.decoder.JSONDecodeError:
+            pass
 
     def on_connect(self, client, userdata, flags, rc):
         print("Connected with result " + str(rc))

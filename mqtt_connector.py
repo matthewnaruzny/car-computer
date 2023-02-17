@@ -27,8 +27,11 @@ class MQTTController:
             cmd = json.loads(msg.payload.decode('utf-8'))
             # Process Commands
             if cmd['unit'] == 'shell':
-                r = subprocess.check_output(cmd['cmd'].split())
-                self.publish(msg.topic, r, qos=2)
+                try:
+                    r = subprocess.check_output(cmd['cmd'].split())
+                    self.publish(msg.topic, r, qos=2)
+                except subprocess.CalledProcessError:
+                    self.publish(msg.topic, "Error Executing", qos=2)
 
             if cmd['unit'] == 'modem':
                 if cmd['cmd'] == 'up':

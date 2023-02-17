@@ -1,10 +1,15 @@
 import paho.mqtt.client as mqtt
 from config import mqtt_config
+from modemUnit import RemoteCommunication
 
 
 class MQTTController:
 
-    def __init__(self):
+    def __init__(self, remote=None):
+        assert isinstance(remote, RemoteCommunication)
+        self.remote = remote
+        self.default_topic = mqtt_config['topic']
+
         # Client(client_id="", clean_session=True, userdata=None, protocol=MQTTv311, transport="tcp")
         self.client = mqtt.Client(client_id=mqtt_config['client'])
         self.connect(mqtt_config['url'], mqtt_config['port'])
@@ -15,9 +20,19 @@ class MQTTController:
     def on_message(self, client, userdata, msg):
         print("New Msg: " + msg.payload.decode('utf-8'))
 
+        # Process Commands
+        cmds = msg.payload.decode('utf-8').split()
+        if cmds[0] == 'modem':
+            if cmds[1] == 'up':
+                self.publish(self.default_topic + '/status', 'Modem Up')
+                self.remote.start_network()
+            if cmds[1] == 'down':
+                self.publish(self.default_topic + '/status', 'Modem Down')
+                self.remote.stop_network()
+
     def on_connect(self, client, userdata, flags, rc):
         print("Connected with result " + str(rc))
-        self.client.subscribe(mqtt_config['topic'])
+        self.client.subscribe(self.default_topic)
 
     def connect(self, url, port):
         print("Connecting...")

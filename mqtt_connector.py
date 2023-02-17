@@ -1,6 +1,7 @@
 import paho.mqtt.client as mqtt
 from config import mqtt_config
 from modemUnit import RemoteCommunication
+import json
 
 
 class MQTTController:
@@ -20,13 +21,14 @@ class MQTTController:
     def on_message(self, client, userdata, msg):
         print("New Msg: " + msg.payload.decode('utf-8'))
 
+        cmd = json.loads(msg.payload.decode('utf-8'))
+
         # Process Commands
-        cmds = msg.payload.decode('utf-8').split()
-        if cmds[0] == 'modem':
-            if cmds[1] == 'up':
+        if cmd['unit'] == 'modem':
+            if cmd['cmd'] == 'up':
                 self.publish(self.default_topic + '/status', 'Modem Up')
                 self.remote.start_network()
-            if cmds[1] == 'down':
+            if cmd['cmd'] == 'down:':
                 self.publish(self.default_topic + '/status', 'Modem Down')
                 self.remote.stop_network()
 

@@ -26,12 +26,12 @@ class RemoteCommunication:
             adapter_check = subprocess.check_output(['ip', 'addr', 'show'])
             if "ppp0" in adapter_check.decode('utf-8'):  # If ppp0 exists, create route and end
                 print("Creating route")
-                subprocess.call(['sudo', 'route', 'add', '-net', '0.0.0.0', 'ppp0'])
+                subprocess.Popen(['sudo', 'route', 'add', '-net', '0.0.0.0', 'ppp0'])
                 return
 
     def stop_network(self):
         if self.pon_p is not None:
-            subprocess.call(['sudo', 'poff'])
+            subprocess.Popen(['sudo', 'poff'])
             self.pon_p = None
 
     def start_tunnel(self):

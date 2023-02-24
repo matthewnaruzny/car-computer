@@ -14,6 +14,11 @@ class RemoteCommunication:
         self.phone = None
         self.pon_p = None
 
+    def power_cycle(self):
+        subprocess.Popen(['sudo', 'raspi-gpio', 'set', '4', 'op', 'dh'])
+        time.sleep(2)
+        subprocess.Popen(['sudo', 'raspi-gpio', 'set', '4', 'op', 'dl'])
+
     def start_network(self):
         print("Attempting to connect to network...")
         self.pon_p = subprocess.Popen(['sudo', 'pon'])

@@ -39,6 +39,7 @@ class MQTTController:
             if cmd['unit'] == 'modem':
                 if cmd['cmd'] == 'power':
                     self.remote.power_cycle()
+                    self.publish(msg.topic, 'Modem Power Cycle', qos=2)
 
                 if cmd['cmd'] == 'up':
                     print('Modem Up')

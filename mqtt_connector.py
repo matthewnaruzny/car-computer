@@ -13,6 +13,8 @@ class MQTTController:
         self.remote = remote
         self.default_topic = mqtt_config['topic']
 
+        self.client_status = {'state': 'up'}
+
         # Client(client_id="", clean_session=True, userdata=None, protocol=MQTTv311, transport="tcp")
         self.client = mqtt.Client(client_id=mqtt_config['client'])
         self.connect(mqtt_config['url'], mqtt_config['port'])
@@ -62,6 +64,9 @@ class MQTTController:
         self.client.tls_set(ca_certs=mqtt_config['root_cert'])
         self.client.username_pw_set(mqtt_config['username'], mqtt_config['password'])
         self.client.connect(url, port, 60)
+
+    def update_state(self):
+        self.client.publish(self.default_topic+'/state', json.dumps(self.client_status), qos=2, retain=True)
 
     def publish(self, topic, payload=None, qos=0, retain=False):
         self.client.publish(topic, payload, qos, retain)

@@ -1,17 +1,11 @@
 import subprocess
 import threading
 import time
-from pyVoIP.VoIP import VoIPPhone, InvalidStateError
-
-import config
-from config import sip_config
 
 
 class RemoteCommunication:
 
     def __init__(self):
-        self.t_watch = None
-        self.phone = None
         self.pon_p = None
 
     def power_cycle(self):
@@ -38,16 +32,3 @@ class RemoteCommunication:
         if self.pon_p is not None:
             subprocess.Popen(['sudo', 'poff'])
             self.pon_p = None
-
-    def sip_connect(self):
-        self.phone = VoIPPhone(sip_config['sip_host'], sip_config['sip_port'],
-                               sip_config['sip_username'], sip_config['sip_password'])
-
-    def start_call(self, number):
-        pass
-
-    def receive_call(self, call):
-        try:
-            call.answer()
-        except InvalidStateError:
-            print("Error Answering Call")

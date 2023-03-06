@@ -19,3 +19,7 @@ mqtt_config = {
     'password': '',
     'topic': ''
 }
+
+locate_config = {
+    'googlemaps_apikey': ''
+}

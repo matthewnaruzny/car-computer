@@ -10,8 +10,8 @@ def get_networks():
         line = result[i]
         if "Cell" in line:
             bssid_s = line.split(":")
-            bssid = bssid_s[0][1:]
-            for s in bssid_s[1:]:
+            bssid = bssid_s[1][1:]
+            for s in bssid_s[2:]:
                 bssid = bssid + ":" + s
             channel = result[i+1].split(":")[1]
             networks.append({"macAddress": bssid, "channel": int(channel)})

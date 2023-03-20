@@ -2,13 +2,12 @@ import subprocess
 import threading
 import time
 
-
-class RemoteCommunication:
+class ModemUnit:
 
     def __init__(self):
         self.pon_p = None
 
-    def power_cycle(self):
+    def power_toggle(self):
         subprocess.Popen(['sudo', 'raspi-gpio', 'set', '4', 'op', 'dh'])
         time.sleep(2)
         subprocess.Popen(['sudo', 'raspi-gpio', 'set', '4', 'op', 'dl'])

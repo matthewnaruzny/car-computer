@@ -1,13 +1,13 @@
 import time
 import config
 
-from modemUnit import RemoteCommunication
+from modemUnit import ModemUnit
 from mqtt_connector import MQTTController
 
 if __name__ == '__main__':
 
     # Start Modem Controller
-    remote = RemoteCommunication()
+    remote = ModemUnit()
 
     # Starts Comms
     mqtt = MQTTController(remote)

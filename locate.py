@@ -6,11 +6,11 @@ from config import locate_config
 
 class Locate:
     def __init__(self):
-        self.gclient = googlemaps.Client(key=locate_config['googlemaps_apikey'])
+        self.__gclient = googlemaps.Client(key=locate_config['googlemaps_apikey'])
 
     def geolocate(self):
         networks = self.__get_networks()
-        r = self.gclient.geolocate(wifi_access_points=networks)
+        r = self.__gclient.geolocate(wifi_access_points=networks)
         return r
 
     def __get_networks(self):

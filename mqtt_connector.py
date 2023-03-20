@@ -2,18 +2,21 @@ import subprocess
 
 import paho.mqtt.client as mqtt
 from config import mqtt_config
-from modemUnit import RemoteCommunication
+from modemUnit import ModemUnit
+from locate import Locate
 import json
 
 
 class MQTTController:
 
     def __init__(self, remote=None):
-        assert isinstance(remote, RemoteCommunication)
+        assert isinstance(remote, ModemUnit)
         self.remote = remote
         self.default_topic = mqtt_config['topic']
 
         self.client_status = {'state': 'up'}
+
+        self.loc = Locate()
 
         # Client(client_id="", clean_session=True, userdata=None, protocol=MQTTv311, transport="tcp")
         self.client = mqtt.Client(client_id=mqtt_config['client'])
@@ -40,7 +43,7 @@ class MQTTController:
 
             if cmd['unit'] == 'modem':
                 if cmd['cmd'] == 'power':
-                    self.remote.power_cycle()
+                    self.remote.power_toggle()
                     self.publish(msg.topic, 'Modem Power Cycle', qos=2)
 
                 if cmd['cmd'] == 'up':
@@ -51,6 +54,13 @@ class MQTTController:
                     print('Modem Down')
                     self.publish(msg.topic, 'Modem Down', qos=2)
                     self.remote.stop_network()
+
+            if cmd['unit'] == 'loc':
+                if cmd['cmd'] == 'network_loc':
+                    print("Network Geolocation")
+                    gloc = self.loc.geolocate()
+                    self.publish(self.default_topic+'/gloc', gloc, qos=2, retain=True)
+                    self.publish(msg.topic, 'Updated Location', qos=2)
 
         except json.decoder.JSONDecodeError:
             pass

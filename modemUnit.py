@@ -104,7 +104,7 @@ class ModemUnit:
                     else:
                         self.__http_data.append(self.__http_code)
 
-                        if 'callback' in self.__http_request_last:
+                        if 'callback' in self.__http_request_last and self.__http_request_last['callback'] is not None:
                             self.__http_request_last['callback'](code, None)
 
                         self.__http_in_progress = False
@@ -115,8 +115,8 @@ class ModemUnit:
                 elif newline.startswith("+HTTPREAD"):
                     http_data = json.loads(self.__ser.read(self.__http_size).decode('utf-8'))
                     self.__http_data.append(http_data)
-                    if 'callback' in self.__http_request_last:
-                        self.__http_request_last['callback'](None, http_data)
+                    if 'callback' in self.__http_request_last and self.__http_request_last['callback'] is not None:
+                        self.__http_request_last['callback'](self.__http_code, http_data)
 
                     self.__http_in_progress = False
                     print("Data\n" + str(self.__http_data))
@@ -160,11 +160,11 @@ class ModemUnit:
             return True
         return False
 
-    def __http_request(self, url, action):
-        self.__http_request_queue.append({'url': url, 'action': action})
+    def __http_request(self, url, action, callback):
+        self.__http_request_queue.append({'url': url, 'action': action, 'callback': callback})
 
-    def http_get(self, url):
-        self.__http_request(url, 0)
+    def http_get(self, url, callback=None):
+        self.__http_request(url, 0, callback)
 
     def get_http_last(self):
         return self.__http_code, self.__http_data[0]

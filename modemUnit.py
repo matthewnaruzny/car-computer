@@ -29,6 +29,9 @@ class ModemUnit:
         self.__cmd_queue = []
         self.__cmd_last = ""
 
+        # Board Info
+        self.__imei = ""
+
         # Serial Vals
         self.__data_lock = False
         self.__write_lock = False
@@ -129,6 +132,9 @@ class ModemUnit:
 
                 elif newline.startswith("+SAPBR"):  # Bearer Parameter Command
                     pass
+                elif self.__cmd_last == "AT+CGSN" and not newline.startswith("AT"):  # IMEI Reply
+                    self.__imei = newline
+                    self.__write_lock = False
 
     def __start_worker(self):
         self.__mthread = threading.Thread(target=self.__main_thread, daemon=True)
@@ -251,3 +257,10 @@ class ModemUnit:
         if self.pon_p is not None:
             subprocess.Popen(['sudo', 'poff'])
             self.pon_p = None
+
+    def get_imei(self):  # Blocking get IMEI
+        self.__imei = ""
+        self.__exec_cmd("AT+CGSN")
+        while True:
+            if self.__imei != "":
+                return self.__imei

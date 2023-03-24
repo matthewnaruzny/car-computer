@@ -3,19 +3,27 @@ import config
 
 from modemUnit import ModemUnit
 
+
+def updateGps(remote, imei, gps):
+    assert isinstance(remote, ModemUnit)
+    remote.http_get(
+        "http://t.upnorthdevelopers.com:5055/?id=" + str(imei) + " &lat=" + str(gps.lat) + "&lon=" + str(gps.lon) +
+        "&timestamp=" + str(gps.utc) + "&altitude=" + str(gps.alt) + "&speed=" + str(gps.speed))
+
+
 if __name__ == '__main__':
 
     # Start Modem Controller
-    remote = ModemUnit(log=False)
+    remote = ModemUnit(log=True)
+
     imei = remote.get_imei()
-    remote.bearer_set_settings(apn='super')
+    remote.start_gps()
+    gps = remote.get_gps()
+
     remote.data_open()
+    remote.bearer_set_settings(apn='super')
     remote.bearer_open()
-    data1 = remote.http_get("http://httpbin.org/get")
-    print("Data: " + str(data1))
-    data2 = remote.http_get("http://route.upnorthdevelopers.com/health")
-    print("Data: " + str(data2))
 
     while True:
-        time.sleep(0.1)
-
+        updateGps(remote, imei, gps)
+        time.sleep(10)

@@ -112,12 +112,14 @@ class ModemUnit:
                     if code == "200" and self.__http_size > 0:
                         self.__exec_cmd("AT+HTTPREAD")
                     else:
-                        self.__http_data[self.__http_request_last['uuid']] = {'code': self.__http_code}
-                        self.__http_in_progress = False
                         if code == "601":  # Network Error - Attempt to Restart
                             self.data_open()
                             self.bearer_open()
                             self.__http_request_queue.append(self.__http_request_last)
+                        else:
+                            self.__http_data[self.__http_request_last['uuid']] = {'code': self.__http_code}
+
+                        self.__http_in_progress = False
 
                 elif newline.startswith("+HTTPREAD"):
                     http_data = json.loads(self.__ser.read(self.__http_size).decode('utf-8'))
@@ -178,6 +180,7 @@ class ModemUnit:
         while True:
             if self.__http_data[new_uuid] is not None:
                 return self.__http_data[new_uuid]
+            time.sleep(0.1)
 
     def http_get(self, url):
         return self.__http_request(url, 0)

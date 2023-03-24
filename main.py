@@ -6,9 +6,9 @@ from modemUnit import ModemUnit
 
 def updateGps(remote, imei, gps):
     assert isinstance(remote, ModemUnit)
-    remote.http_get(
-        "http://t.upnorthdevelopers.com:5055/?id=" + str(imei) + " &lat=" + str(gps.lat) + "&lon=" + str(gps.lon) +
-        "&timestamp=" + str(gps.utc) + "&altitude=" + str(gps.alt) + "&speed=" + str(gps.speed))
+    reqline = "http://t.upnorthdevelopers.com:5055/?id=" + str(imei) + "&lat=" + str(gps.lat) + "&lon=" +\
+              str(gps.lon) + "&timestamp=" + str(gps.utc) + "&altitude=" + str(gps.alt) + "&speed=" + str(gps.speed)
+    remote.http_get(reqline)
 
 
 if __name__ == '__main__':

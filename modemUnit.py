@@ -37,6 +37,12 @@ class ModemUnit:
         self.__gps_active = False
         self.__gps = GPSData()
 
+        # Bearer Settings
+        self.__bearer_apn = ""
+        self.__bearer_username = ""
+        self.__bearer_password = ""
+        self.__bearer_ip = ""
+
         # HTTP Vals
         self.__http_in_progress = False
         self.__http_request_queue = []
@@ -110,7 +116,7 @@ class ModemUnit:
                         self.__http_in_progress = False
                         if code == "603":  # Network Error - Attempt to Restart
                             self.data_open()
-                            self.network_open()
+                            self.bearer_open()
 
                 elif newline.startswith("+HTTPREAD"):
                     http_data = json.loads(self.__ser.read(self.__http_size).decode('utf-8'))
@@ -120,6 +126,9 @@ class ModemUnit:
 
                     self.__http_in_progress = False
                     print("Data\n" + str(self.__http_data))
+
+                elif newline.startswith("+SAPBR"):  # Bearer Parameter Command
+                    pass
 
     def __start_worker(self):
         self.__mthread = threading.Thread(target=self.__main_thread, daemon=True)
@@ -167,24 +176,44 @@ class ModemUnit:
         self.__http_request(url, 0, callback)
 
     def get_http_last(self):
-        return self.__http_code, self.__http_data[0]
+        if len(self.__http_data) > 0:
+            return self.__http_code, self.__http_data[0]
+        return self.__http_code, {}
 
     def get_http_response(self, i):
         return self.__http_data[i]
+
+    # Bearer Configuration
+
+    def __bearer_set_val(self, cid, param, value):
+        self.__exec_cmd('AT+SAPBR=3,' + str(cid) + ',"' + param + '","' + value + '"')
+
+    def __bearer_update(self):
+        if self.__bearer_apn != "":
+            self.__bearer_set_val(1, "APN", self.__bearer_apn)  # Set APN
+        if self.__bearer_username != "":
+            self.__bearer_set_val(1, "USER", self.__bearer_username)  # Set Username
+        if self.__bearer_password != "":
+            self.__bearer_set_val(1, "PWD", self.__bearer_password)  # Password
+
+    def bearer_set_settings(self, apn="", username="", password=""):
+        self.__bearer_apn = apn
+        self.__bearer_username = username
+        self.__bearer_password = password
+        self.__bearer_update()
 
     def data_open(self):
         self.__exec_cmd("AT+CMEE=1")
         self.__exec_cmd("AT+CGATT=1")
         self.__exec_cmd("AT+CGACT=1,1")
         self.__exec_cmd("AT+CGPADDR=1")
-        self.__exec_cmd('AT+SAPBR=3,1,"APN","super"')
+        self.__bearer_update()
 
-    def network_open(self):
+    def bearer_open(self):
         self.__exec_cmd("AT+SAPBR=1,1")
 
-    def network_close(self):
+    def bearer_close(self):
         self.__exec_cmd("AT+SAPBR=0,1")
-
 
     # GPS and Location Functions
     def start_gps(self):
@@ -203,7 +232,7 @@ class ModemUnit:
         time.sleep(2)
         subprocess.Popen(['sudo', 'raspi-gpio', 'set', '4', 'op', 'dl'])
 
-    def start_network(self):
+    def start_sys_network(self):
         print("Attempting to connect to network...")
         self.pon_p = subprocess.Popen(['sudo', 'pon'])
 
@@ -218,7 +247,7 @@ class ModemUnit:
                 subprocess.Popen(['sudo', 'route', 'add', '-net', '0.0.0.0', 'ppp0'])
                 return
 
-    def stop_network(self):
+    def stop_sys_network(self):
         if self.pon_p is not None:
             subprocess.Popen(['sudo', 'poff'])
             self.pon_p = None

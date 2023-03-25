@@ -17,7 +17,7 @@ class GPSData:
 
 class ModemUnit:
 
-    def __init__(self, port='COM3', baudrate=115200, log=False):
+    def __init__(self, port='/dev/ttyS0', baudrate=115200, log=False):
         self.__mthread = None
         self.__ser = serial.Serial(port, baudrate=baudrate)
         self.pon_p = None

@@ -75,9 +75,11 @@ class ModemUnit:
     def __process_input(self):
         if self.__ser.in_waiting > 0:
             while self.__ser.in_waiting:
-                newline = self.__ser.readline().decode('utf-8').rstrip('\r').rstrip('\n')
+                newline = self.__ser.readline().decode('utf-8')
                 if self.__log:
                     print("Received: " + newline)
+
+                newline = newline.rstrip('\r').rstrip('\n')
 
                 if "OK" in newline:
                     self.__modem_power = True

@@ -79,8 +79,7 @@ class ModemUnit:
                 if self.__log:
                     print("Received: " + newline)
 
-                newline = newline.rstrip('\r').rstrip('\n')
-                newline = newline.strip('\r')
+                newline = newline.rstrip('\r').rstrip('\n').rstrip('\r')
 
                 if "OK" in newline:
                     self.__modem_power = True
@@ -133,7 +132,7 @@ class ModemUnit:
                 elif newline.startswith("+SAPBR"):  # Bearer Parameter Command
                     pass
                 elif self.__cmd_last == "AT+CGSN" and not newline.startswith("AT"):  # IMEI Reply
-                    self.__imei = newline.strip('\n').strip('\r')
+                    self.__imei = newline
                     self.__write_lock = False
 
     def __start_worker(self):

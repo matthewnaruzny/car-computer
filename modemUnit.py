@@ -75,7 +75,7 @@ class ModemUnit:
     def __process_input(self):
         if self.__ser.in_waiting > 0:
             while self.__ser.in_waiting:
-                newline = self.__ser.readline().decode('utf-8').rstrip('\r\n')
+                newline = self.__ser.readline().decode('utf-8').rstrip('\r').rstrip('\n')
                 if self.__log:
                     print("Received: " + newline)
 

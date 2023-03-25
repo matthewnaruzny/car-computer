@@ -49,11 +49,11 @@ class MQTTController:
                 if cmd['cmd'] == 'up':
                     print('Modem Up')
                     self.publish(msg.topic, 'Modem Up', qos=2)
-                    self.remote.start_network()
+                    self.remote.start_sys_network()
                 if cmd['cmd'] == 'down':
                     print('Modem Down')
                     self.publish(msg.topic, 'Modem Down', qos=2)
-                    self.remote.stop_network()
+                    self.remote.stop_sys_network()
 
             if cmd['unit'] == 'loc':
                 if cmd['cmd'] == 'network_loc':

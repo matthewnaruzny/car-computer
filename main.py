@@ -2,17 +2,28 @@ import time
 import config
 
 from modemUnit import ModemUnit
-from mqtt_connector import MQTTController
+
+
+def updateGps(remote, imei, gps):
+    assert isinstance(remote, ModemUnit)
+    reqline = "http://t.upnorthdevelopers.com:5055/?id=" + str(imei) + "&lat=" + str(gps.lat) + "&lon=" +\
+              str(gps.lon) + "&timestamp=" + str(gps.utc) + "&altitude=" + str(gps.alt) + "&speed=" + str(gps.speed)
+    remote.http_get(reqline)
+
 
 if __name__ == '__main__':
 
     # Start Modem Controller
-    remote = ModemUnit()
+    remote = ModemUnit(log=True)
 
-    # Starts Comms
-    mqtt = MQTTController(remote)
+    imei = remote.get_imei()
+    remote.start_gps()
+    gps = remote.get_gps()
+
+    remote.data_open()
+    remote.bearer_set_settings(apn='super')
+    remote.bearer_open()
+
     while True:
-        mqtt.update_state()
-        mqtt.publish(config.mqtt_config['topic'] + '/time', time.time())
-        time.sleep(60)
-
+        updateGps(remote, imei, gps)
+        time.sleep(10)

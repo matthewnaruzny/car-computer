@@ -116,6 +116,8 @@ class ModemUnit:
                         self.__http_data[self.__http_request_last['uuid']] = {'code': self.__http_code}
                         self.__http_in_progress = False
 
+                    self.__exec_cmd("AT+HTTPTERM")
+
                 elif newline.startswith("+HTTPREAD"):
                     http_data = json.loads(self.__ser.read(self.__http_size).decode('utf-8'))
                     self.__http_data[self.__http_request_last['uuid']] = http_data

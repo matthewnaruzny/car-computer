@@ -80,6 +80,7 @@ class ModemUnit:
                     print("Received: " + newline)
 
                 newline = newline.rstrip('\r').rstrip('\n')
+                newline = newline.strip('\r')
 
                 if "OK" in newline:
                     self.__modem_power = True
@@ -105,7 +106,6 @@ class ModemUnit:
                         self.__gps.speed = float(data[6])
                     except ValueError:
                         pass
-                    self.__write_lock = False
                 elif newline.startswith("+HTTPACTION"):  # New HTTP Data
                     resdata = newline.split(',')
                     code = resdata[1]
@@ -133,7 +133,7 @@ class ModemUnit:
                 elif newline.startswith("+SAPBR"):  # Bearer Parameter Command
                     pass
                 elif self.__cmd_last == "AT+CGSN" and not newline.startswith("AT"):  # IMEI Reply
-                    self.__imei = newline
+                    self.__imei = newline.strip('\n').strip('\r')
                     self.__write_lock = False
 
     def __start_worker(self):

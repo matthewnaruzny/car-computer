@@ -265,3 +265,4 @@ class ModemUnit:
         while True:
             if self.__imei != "":
                 return self.__imei
+            time.sleep(0.1)

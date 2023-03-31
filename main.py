@@ -6,7 +6,10 @@ from modemUnit import ModemUnit
 
 def updateGps(remote, imei, gps):
     assert isinstance(remote, ModemUnit)
-    remote.http_get("http://t.upnorthdevelopers.com:5055/?id=" + str(imei) + "&lat=" + str(gps.lat) + "&lon=" + str(gps.lon) + "&timestamp=" + str(gps.utc) + "&altitude=" + str(gps.alt) + "&speed=" + str(gps.speed))
+    result = remote.http_get("http://t.upnorthdevelopers.com:5055/?id=" + str(imei) + "&lat=" + str(gps.lat) + "&lon=" + str(gps.lon) + "&timestamp=" + str(gps.utc) + "&altitude=" + str(gps.alt) + "&speed=" + str(gps.speed))
+    if "code" in result and result["code"] == 601:
+        remote.bearer_close()
+        remote.bearer_open()
 
 
 if __name__ == '__main__':

@@ -130,6 +130,7 @@ class ModemUnit:
                 elif self.__cmd_last == "AT+CGSN" and not newline.startswith("AT"):  # IMEI Reply
                     print("Received IMEI: " + self.__imei)
                     self.__imei = newline
+                    self.__cmd_last = "imei-done"
                     self.__write_lock = False
 
     def __start_worker(self):
@@ -261,10 +262,10 @@ class ModemUnit:
             self.pon_p = None
 
     def get_imei(self):  # Blocking get IMEI
-        self.__imei = ""
+        self.__imei = "xx"
         self.__exec_cmd("AT+CGSN")
         while True:
-            if self.__imei != "":
+            if self.__imei != "xx":
                 print("Updated IMEI")
                 print(self.__imei)
                 return self.__imei

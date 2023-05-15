@@ -128,6 +128,7 @@ class ModemUnit:
                 elif newline.startswith("+SAPBR"):  # Bearer Parameter Command
                     pass
                 elif self.__cmd_last == "AT+CGSN" and not newline.startswith("AT"):  # IMEI Reply
+                    print("Received IMEI: " + self.__imei)
                     self.__imei = newline
                     self.__write_lock = False
 
@@ -143,7 +144,7 @@ class ModemUnit:
     def __main_thread(self):
         # Startup
 
-        self.__exec_cmd("ATE1V1")
+        #self.__exec_cmd("ATE1V1")
 
         while self.__worker_working:
             self.__process_input()
@@ -264,5 +265,7 @@ class ModemUnit:
         self.__exec_cmd("AT+CGSN")
         while True:
             if self.__imei != "":
+                print("Updated IMEI")
+                print(self.__imei)
                 return self.__imei
             time.sleep(0.1)

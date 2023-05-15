@@ -32,6 +32,7 @@ class ModemUnit:
 
         # Board Info
         self.__imei = ""
+        self.__imei_lock = False
 
         # Serial Vals
         self.__data_lock = False
@@ -127,11 +128,11 @@ class ModemUnit:
 
                 elif newline.startswith("+SAPBR"):  # Bearer Parameter Command
                     pass
-                elif self.__cmd_last == "AT+CGSN" and not newline.startswith("AT"):  # IMEI Reply
+                elif self.__cmd_last == "AT+CGSN" and not newline.startswith("AT") and not self.__imei_lock:  # IMEI Reply
                     print("Received IMEI: " + self.__imei)
                     self.__imei = newline
-                    self.__cmd_last = "imei-done"
                     self.__write_lock = False
+                    self.__imei_lock = True
 
     def __start_worker(self):
         self.__mthread = threading.Thread(target=self.__main_thread, daemon=True)
@@ -262,11 +263,10 @@ class ModemUnit:
             self.pon_p = None
 
     def get_imei(self):  # Blocking get IMEI
-        self.__imei = "xx"
+        self.__imei = ""
+        self.__imei_lock = False
         self.__exec_cmd("AT+CGSN")
         while True:
-            if self.__imei != "xx":
-                print("Updated IMEI")
-                print(self.__imei)
+            if self.__imei != "":
                 return self.__imei
             time.sleep(0.1)

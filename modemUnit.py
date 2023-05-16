@@ -146,8 +146,6 @@ class ModemUnit:
     def __main_thread(self):
         # Startup
 
-        #self.__exec_cmd("ATE1V1")
-
         while self.__worker_working:
             self.__process_input()
             if not self.__write_lock:

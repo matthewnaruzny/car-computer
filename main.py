@@ -1,12 +1,16 @@
 import time
 import config
+import datetime
+import dateutil.parse
 
 from modemUnit import ModemUnit
 
 
 def updateGps(remote, imei, gps):
     assert isinstance(remote, ModemUnit)
-    result = remote.http_get("http://t.upnorthdevelopers.com:5055/?id=" + str(imei) + "&lat=" + str(gps.lat) + "&lon=" + str(gps.lon) + "&timestamp=" + str(gps.utc).split('.')[0] + "&altitude=" + str(gps.alt) + "&speed=" + str(gps.speed))
+    iso_utc = gps.utc[:8] + 'T' + gps.utc[8:]
+    timestamp = dateutil.parser.isoparse(gps.utc).timestamp()
+    result = remote.http_get("http://t.upnorthdevelopers.com:5055/?id=" + str(imei) + "&lat=" + str(gps.lat) + "&lon=" + str(gps.lon) + "&timestamp=" + timestamp + "&altitude=" + str(gps.alt) + "&speed=" + str(gps.speed))
     if "code" in result and result["code"] == 601:
         remote.bearer_close()
         remote.bearer_open()

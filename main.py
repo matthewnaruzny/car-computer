@@ -1,7 +1,7 @@
 import time
 import config
 import datetime
-import dateutil.parse
+import dateutil.parser
 
 from modemUnit import ModemUnit
 

@@ -30,4 +30,4 @@ if __name__ == '__main__':
 
     while True:
         updateGps(remote, imei, gps)
-        time.sleep(10)
+        time.sleep(60)

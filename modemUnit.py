@@ -157,9 +157,11 @@ class ModemUnit:
 
         while self.__worker_working:
 
-            if time.time() - self.__power_check_time > 20:
+            if time.time() - self.__power_check_time > 20: # Timeout - Restart and Rerun
                 self.power_toggle()
                 time.sleep(10)
+                self.__write_lock = False
+                self.__modem_write(self.__cmd_last)
 
             self.__process_input()
             if not self.__write_lock:
@@ -251,6 +253,7 @@ class ModemUnit:
 
     def power_toggle(self):
         print("Power Cycling Modem")
+        self.__power_check_time = time.time()
         subprocess.Popen(['sudo', 'raspi-gpio', 'set', '4', 'op', 'dh'])
         time.sleep(2)
         subprocess.Popen(['sudo', 'raspi-gpio', 'set', '4', 'op', 'dl'])

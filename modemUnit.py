@@ -24,6 +24,9 @@ class ModemUnit:
 
         self.__log = log
 
+        self.__power_check_time = 0
+        self.__power_checking = False
+
         self.__modem_power = False
         self.__worker_working = False
 
@@ -82,6 +85,9 @@ class ModemUnit:
 
                 newline = newline.rstrip('\r').rstrip('\n').rstrip('\r')
 
+                self.__power_checking = False
+                self.__power_check_time = time.time()
+
                 if "OK" in newline:
                     self.__modem_power = True
                     self.__write_lock = False
@@ -128,7 +134,8 @@ class ModemUnit:
 
                 elif newline.startswith("+SAPBR"):  # Bearer Parameter Command
                     pass
-                elif self.__cmd_last == "AT+CGSN" and not newline.startswith("AT") and not self.__imei_lock:  # IMEI Reply
+                elif self.__cmd_last == "AT+CGSN" and not newline.startswith(
+                        "AT") and not self.__imei_lock:  # IMEI Reply
                     print("Received IMEI: " + self.__imei)
                     self.__imei = newline
                     self.__write_lock = False
@@ -140,13 +147,20 @@ class ModemUnit:
         self.__mthread.start()
 
     def __stop_worker(self):
-        self.__worker_working = True
+        self.__worker_working = False
         self.__mthread.join(20)
 
     def __main_thread(self):
         # Startup
 
+        self.__power_check_time = time.time()
+
         while self.__worker_working:
+
+            if time.time() - self.__power_check_time > 20:
+                self.power_toggle()
+                time.sleep(10)
+
             self.__process_input()
             if not self.__write_lock:
                 if not self.__http_in_progress:  # Perform next HTTP request

@@ -1,6 +1,4 @@
 import time
-import config
-import datetime
 import dateutil.parser
 
 from modemUnit import ModemUnit
@@ -8,7 +6,6 @@ from modemUnit import ModemUnit
 
 def updateGps(remote, imei, gps):
     assert isinstance(remote, ModemUnit)
-    timestamp = 0
     if gps.utc != 0:
         iso_utc = str(gps.utc)[:8] + 'T' + str(gps.utc)[8:12]
         timestamp = dateutil.parser.isoparse(iso_utc).timestamp()

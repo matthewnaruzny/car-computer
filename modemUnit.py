@@ -250,6 +250,7 @@ class ModemUnit:
         return self.__gps
 
     def power_toggle(self):
+        print("Power Cycling Modem")
         subprocess.Popen(['sudo', 'raspi-gpio', 'set', '4', 'op', 'dh'])
         time.sleep(2)
         subprocess.Popen(['sudo', 'raspi-gpio', 'set', '4', 'op', 'dl'])

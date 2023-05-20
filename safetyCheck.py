@@ -19,6 +19,7 @@ class SafetyCheck:
 
     def __main_thread(self):
         state = GPIO.input(21)
+        print("State: " + str(state))
         if state == 21:
             self.networker.sendSOS()
         time.sleep(0.1)

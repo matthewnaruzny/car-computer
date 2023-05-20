@@ -9,7 +9,7 @@ class SafetyCheck:
     def __init__(self, networker):
         assert isinstance(networker, NetworkCommunication)
         self.networker = networker
-        GPIO.setmode(GPIO.BCM)
+        GPIO.setmode(GPIO.BOARD)
         GPIO.setup(21, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
     def __start_thread(self):

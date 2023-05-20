@@ -11,6 +11,7 @@ class SafetyCheck:
         self.networker = networker
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(21, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        self.__start_thread()
 
     def __start_thread(self):
         self.__mthread = threading.Thread(target=self.__main_thread, daemon=True)

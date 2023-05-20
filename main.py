@@ -2,6 +2,8 @@ import time
 import dateutil.parser
 
 from modemUnit import ModemUnit
+from networkCommunication import NetworkCommunication
+from safetyCheck import SafetyCheck
 
 
 def updateGps(remote, imei, gps):
@@ -16,10 +18,14 @@ def updateGps(remote, imei, gps):
 
 if __name__ == '__main__':
 
-    # Start Modem Controller
+    # Start Controllers
     remote = ModemUnit(log=True)
 
     imei = remote.get_imei()
+
+    networkCommunication = NetworkCommunication(imei, remote)
+    safetyCheck = SafetyCheck(networkCommunication)
+
     remote.start_gps()
     gps = remote.get_gps()
 

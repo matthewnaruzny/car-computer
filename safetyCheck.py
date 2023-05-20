@@ -11,6 +11,7 @@ class SafetyCheck:
         self.networker = networker
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(21, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        self.__old_state = 1
         self.__start_thread()
 
     def __start_thread(self):
@@ -20,7 +21,7 @@ class SafetyCheck:
     def __main_thread(self):
         while True:
             state = GPIO.input(21)
-            print("State: " + str(state))
-            if state == 21:
+            if state == 0 and state != self.__old_state:
+                self.__old_state = state
                 self.networker.sendSOS()
             time.sleep(0.1)

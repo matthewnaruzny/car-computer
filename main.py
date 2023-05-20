@@ -11,7 +11,7 @@ def updateGps(remote, imei, gps):
         timestamp = dateutil.parser.isoparse(iso_utc).timestamp()
         remote.http_get("http://t.upnorthdevelopers.com:5055/?id=" + str(imei) + "&lat=" + str(gps.lat) + "&lon=" + str(gps.lon) + "&timestamp=" + str(timestamp)[:len(str(timestamp))-2] + "&altitude=" + str(gps.alt) + "&speed=" + str(gps.speed))
     else:
-        remote.http_get("http://t.upnorthdevelopers.com:5055/?id=" + str(imei) + "&timestamp=" + str(time.time()))
+        remote.http_get("http://t.upnorthdevelopers.com:5055/?id=" + str(imei) + "&timestamp=" + str(time.time()).split('.')[0])
 
 
 if __name__ == '__main__':

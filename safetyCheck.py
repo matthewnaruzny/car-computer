@@ -21,7 +21,7 @@ class SafetyCheck:
     def __main_thread(self):
         while True:
             state = GPIO.input(21)
+            self.__old_state = state
             if state == 0 and state != self.__old_state:
-                self.__old_state = state
                 self.networker.sendSOS()
             time.sleep(0.1)

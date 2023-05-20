@@ -6,7 +6,7 @@ from modemUnit import ModemUnit
 
 def updateGps(remote, imei, gps):
     assert isinstance(remote, ModemUnit)
-    if gps.utc != 0:
+    if gps.lat != 0:
         iso_utc = str(gps.utc)[:8] + 'T' + str(gps.utc)[8:12]
         timestamp = dateutil.parser.isoparse(iso_utc).timestamp()
         remote.http_get("http://t.upnorthdevelopers.com:5055/?id=" + str(imei) + "&lat=" + str(gps.lat) + "&lon=" + str(gps.lon) + "&timestamp=" + str(timestamp)[:len(str(timestamp))-2] + "&altitude=" + str(gps.alt) + "&speed=" + str(gps.speed))

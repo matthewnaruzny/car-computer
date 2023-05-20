@@ -157,7 +157,7 @@ class ModemUnit:
 
         while self.__worker_working:
 
-            if time.time() - self.__power_check_time > 20: # Timeout - Restart and Rerun
+            if time.time() - self.__power_check_time > 20 and self.__write_lock:  # Timeout Check - Restart and Rerun
                 self.power_toggle()
                 time.sleep(10)
                 self.__write_lock = False

@@ -8,4 +8,5 @@ class NetworkCommunication:
         self.mUnit = mUnit
 
     def sendSOS(self):
+        print("Trigger SOS")
         self.mUnit.http_get("http://t.upnorthdevelopers.com:5055/?id=" + str(self.imei) + "&alarm=sos")

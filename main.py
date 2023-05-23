@@ -1,5 +1,3 @@
-import time
-
 from modemUnit import ModemUnit
 from networkCommunication import NetworkCommunication
 from safetyCheck import SafetyCheck

@@ -32,7 +32,7 @@ class NetworkCommunication:
         newcall = "http://t.upnorthdevelopers.com:5055/id=" + str(self.imei)
 
         # GPS
-        if self.__gps.lat != 0:
+        if self.__gps is not None and self.__gps.lat != 0:
             iso_utc = str(self.__gps.utc)[:8] + 'T' + str(self.__gps.utc)[8:12]
             timestamp = dateutil.parser.isoparse(iso_utc).timestamp()
             newcall += "&lat=" + str(self.__gps.lat) + "&lon=" + str(

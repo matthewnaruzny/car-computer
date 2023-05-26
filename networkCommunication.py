@@ -29,7 +29,7 @@ class NetworkCommunication:
 
     def __sendPing(self):
         # Generate Base
-        newcall = "http://t.upnorthdevelopers.com:5055/id=" + str(self.imei)
+        newcall = "http://t.upnorthdevelopers.com:5055/?id=" + str(self.imei)
 
         # GPS
         if self.__gps is not None and self.__gps.lat != 0:

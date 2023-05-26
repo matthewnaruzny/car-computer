@@ -2,6 +2,8 @@ from modemUnit import ModemUnit
 from networkCommunication import NetworkCommunication
 from safetyCheck import SafetyCheck
 
+import time
+
 if __name__ == '__main__':
     # Start Controllers
     remote = ModemUnit(log=True)
@@ -17,3 +19,6 @@ if __name__ == '__main__':
 
     networkCommunication = NetworkCommunication(imei, remote)
     safetyCheck = SafetyCheck(networkCommunication)
+
+    while True:
+        time.sleep(0.5)

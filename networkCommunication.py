@@ -10,6 +10,7 @@ class NetworkCommunication:
         self.imei = imei
         self.mUnit = mUnit
         self.__sos = False
+        self.__sos_old = False
         self.__gps = None
 
         # Start Worker Thread
@@ -26,6 +27,9 @@ class NetworkCommunication:
 
     def sos(self, sos=True):
         self.__sos = sos
+        if self.__sos is not self.__sos_old:
+            self.__sendPing()
+        self.__sos_old = self.__sos
 
     def __sendPing(self):
         # Generate Base

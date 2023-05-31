@@ -21,5 +21,5 @@ class SafetyCheck:
         while True:
             # SOS Check
             state = GPIO.input(21)
-            self.networker.sos(sos=(state != 0))
+            self.networker.sos(sos=(state != 1))
             time.sleep(0.1)

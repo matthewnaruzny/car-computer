@@ -110,6 +110,7 @@ class ModemUnit:
                         self.__gps.lon = float(data[4])
                         self.__gps.alt = float(data[5])
                         self.__gps.speed = float(data[6])
+                        self.__gps.course = float(data[7])
                     except ValueError:
                         pass
                 elif newline.startswith("+HTTPACTION"):  # New HTTP Data

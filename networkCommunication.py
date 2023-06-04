@@ -43,7 +43,7 @@ class NetworkCommunication:
             timestamp = dateutil.parser.isoparse(iso_utc).timestamp()
             newcall += "&lat=" + str(self.__gps.lat) + "&lon=" + str(
                 self.__gps.lon) + "&timestamp=" + str(timestamp)[:len(str(timestamp)) - 2] + "&altitude=" + str(
-                self.__gps.alt) + "&speed=" + str(knot_speed)
+                self.__gps.alt) + "&speed=" + str(knot_speed) + "&course=" + str(self.__gps.course)
         else:
             newcall += "&timestamp=" + str(time.time()).split('.')[0]
 

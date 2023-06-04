@@ -39,6 +39,8 @@ class SafetyCheck:
                     self.__sos_pending = True
                     self.__sos_pending_time = time.time()
             else:
+                print("SOS End")
+                self.__sos_active = False
                 self.__sos_pending = False
                 self.networker.sos(sos=False)
 

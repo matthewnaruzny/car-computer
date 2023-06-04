@@ -5,7 +5,6 @@ import time
 
 
 class SafetyCheck:
-
     def __init__(self, networker):
         assert isinstance(networker, NetworkCommunication)
         self.networker = networker
@@ -19,8 +18,7 @@ class SafetyCheck:
         self.__start_thread()
 
     def __start_thread(self):
-        self.__mthread = threading.Thread(
-            target=self.__main_thread, daemon=True)
+        self.__mthread = threading.Thread(target=self.__main_thread, daemon=True)
         self.__mthread.start()
 
     def __main_thread(self):

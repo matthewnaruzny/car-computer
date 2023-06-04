@@ -1,7 +1,9 @@
-from networkCommunication import NetworkCommunication
-import RPi.GPIO as GPIO
 import threading
 import time
+
+import RPi.GPIO as GPIO
+
+from networkCommunication import NetworkCommunication
 
 
 class SafetyCheck:

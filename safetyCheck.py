@@ -11,6 +11,11 @@ class SafetyCheck:
         self.networker = networker
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(21, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+        self.__sos_active = False
+        self.__sos_pending = False
+        self.__sos_pending_time = 0
+
         self.__start_thread()
 
     def __start_thread(self):
@@ -21,5 +26,21 @@ class SafetyCheck:
         while True:
             # SOS Check
             state = GPIO.input(21)
-            self.networker.sos(sos=(state != 1))
+
+            if state == 0:  # SOS Raised
+                if self.__sos_active:
+                    self.networker.sos(sos=True)
+                elif self.__sos_pending:
+                    if time.time() - self.__sos_pending_time > 5:
+                        self.__sos_active = True
+                else:
+                    print("SOS Starting Pending")
+                    self.__sos_pending = True
+                    self.__sos_pending_time = time.time()
+            else:
+                self.__sos_active = False
+                self.__sos_pending = False
+                self.networker.sos(sos=False)
+
+            # self.networker.sos(sos=(state != 1))
             time.sleep(0.1)

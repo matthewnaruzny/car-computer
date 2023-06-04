@@ -29,7 +29,6 @@ class SafetyCheck:
 
             if state == 0:  # SOS Raised
                 if self.__sos_active:
-                    print("Current SOS")
                     self.networker.sos(sos=True)
                 elif self.__sos_pending:
                     if time.time() - self.__sos_pending_time > 5:
@@ -39,7 +38,6 @@ class SafetyCheck:
                     self.__sos_pending = True
                     self.__sos_pending_time = time.time()
             else:
-                print("SOS End")
                 self.__sos_active = False
                 self.__sos_pending = False
                 self.networker.sos(sos=False)

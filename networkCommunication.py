@@ -38,11 +38,12 @@ class NetworkCommunication:
         # GPS
         self.__gps = self.mUnit.get_gps()  # Update GPS Values from modem
         if self.__gps is not None and self.__gps.lat != 0:
+            knot_speed = self.__gps.speed * 0.539957  # Convert from km/h to Knot
             iso_utc = str(self.__gps.utc)[:8] + 'T' + str(self.__gps.utc)[8:12]
             timestamp = dateutil.parser.isoparse(iso_utc).timestamp()
             newcall += "&lat=" + str(self.__gps.lat) + "&lon=" + str(
                 self.__gps.lon) + "&timestamp=" + str(timestamp)[:len(str(timestamp)) - 2] + "&altitude=" + str(
-                self.__gps.alt) + "&speed=" + str(self.__gps.speed)
+                self.__gps.alt) + "&speed=" + str(knot_speed)
         else:
             newcall += "&timestamp=" + str(time.time()).split('.')[0]
 

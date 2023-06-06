@@ -20,7 +20,7 @@ class NetworkCommunication:
     def __main_thread(self):
         while True:
             self.__sendPing()
-            time.sleep(20)
+            time.sleep(30)
 
     def updateGPS(self, gps):
         self.__gps = gps

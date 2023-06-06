@@ -20,7 +20,11 @@ class NetworkCommunication:
     def __main_thread(self):
         while True:
             self.__sendPing()
-            time.sleep(30)
+
+            if self.__gps is not None or self.__gps.speed == 0:
+                time.sleep(60)
+            else:
+                time.sleep(20)
 
     def updateGPS(self, gps):
         self.__gps = gps

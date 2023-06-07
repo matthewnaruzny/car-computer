@@ -13,18 +13,24 @@ class NetworkCommunication:
         self.__sos_old = False
         self.__gps = None
 
+        self.__last_ping_time = 0
+
         # Start Worker Thread
         self.__mthread = threading.Thread(target=self.__main_thread, daemon=True)
         self.__mthread.start()
 
     def __main_thread(self):
         while True:
-            self.__sendPing()
+            time_lapsed = time.time() - self.__last_ping_time
 
-            if self.__gps is not None or self.__gps.speed == 0:
-                time.sleep(60)
-            else:
-                time.sleep(20)
+            if self.__gps is not None and self.__gps.speed > 1 and time_lapsed >= 20:
+                self.__sendPing()
+                self.__last_ping_time = time.time()
+            elif time_lapsed >= 60:
+                self.__sendPing()
+                self.__last_ping_time = time.time()
+
+            time.sleep(0.1)
 
     def updateGPS(self, gps):
         self.__gps = gps

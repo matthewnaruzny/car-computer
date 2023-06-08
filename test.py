@@ -21,5 +21,5 @@ if __name__ == "__main__":
 
     logging.info("Testing GET Requests")
     g1 = remote.http_get("https://httpstat.us/200")
-    logging.info("G1: " + g1)
+    logging.info("G1: " + str(g1))
     time.sleep(5)

@@ -56,6 +56,5 @@ class NetworkCommunication:
         if self.__sos:
             newcall += "&alarm=sos"
 
-        print("Sending Ping:")
-        print("Call:" + newcall)
+        logging.info("Sending Ping: " + newcall)
         self.mUnit.http_get(newcall)

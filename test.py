@@ -18,3 +18,7 @@ if __name__ == "__main__":
     remote.data_open()
     remote.bearer_set_settings(apn='super')
     remote.bearer_open()
+
+    logging.info("Testing GET Requests")
+    g1 = remote.http_get("https://httpstat.us/200")
+    logging.info("G1: " + g1)

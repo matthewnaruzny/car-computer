@@ -9,6 +9,7 @@ import argparse
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='Car Computer')
     args = parser.parse_args()
+    logging.basicConfig(level=logging.INFO)
     logging.info("--Starting Test--")
 
     # Start Modem and Network

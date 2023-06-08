@@ -20,6 +20,6 @@ if __name__ == "__main__":
     remote.bearer_open()
 
     logging.info("Testing GET Requests")
-    g1 = remote.http_get("http://httpstat.us/200")
+    g1 = remote.http_get("http://c.upnorthdevelopers.com/alerts")
     logging.info("G1: " + str(g1))
     time.sleep(5)

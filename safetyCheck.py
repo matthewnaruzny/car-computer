@@ -1,7 +1,9 @@
 from networkCommunication import NetworkCommunication
+
 import RPi.GPIO as GPIO
 import threading
 import time
+import logging
 
 
 class SafetyCheck:
@@ -34,7 +36,7 @@ class SafetyCheck:
                     if time.time() - self.__sos_pending_time > 5:
                         self.__sos_active = True
                 else:
-                    print("SOS Starting Pending")
+                    logging.warning("SOS Starting Pending")
                     self.__sos_pending = True
                     self.__sos_pending_time = time.time()
             else:

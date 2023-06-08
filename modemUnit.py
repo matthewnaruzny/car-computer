@@ -4,6 +4,7 @@ import time
 import serial
 import json
 import uuid
+import logging
 
 
 class GPSData:
@@ -68,12 +69,13 @@ class ModemUnit:
             self.__ser.write((cmd + '\n').encode('utf-8'))
             self.__write_lock = True
             if self.__log:
-                print("Sent: " + cmd)
+                logging.info("Modem Sent: " + cmd)
+                # print("Sent: " + cmd)
             self.__cmd_last = cmd
 
             return True
         else:
-            print("Output locked")
+            # print("Output locked")
             return False
 
     def __process_input(self):
@@ -81,7 +83,8 @@ class ModemUnit:
             while self.__ser.in_waiting:
                 newline = self.__ser.readline().decode('utf-8')
                 if self.__log:
-                    print("Received: " + newline)
+                    logging.info("Modem Received: " + newline)
+                    # print("Received: " + newline)
 
                 newline = newline.rstrip('\r').rstrip('\n').rstrip('\r')
 
@@ -98,9 +101,11 @@ class ModemUnit:
                     self.__gps_active = ('1' in pwr)
                     self.__write_lock = False
                     if self.__gps_active:
-                        print("GNSS Active")
+                        logging.info("Modem: GNSS Active")
+                        # print("GNSS Active")
                     else:
-                        print("GNSS Not Active")
+                        logging.info("Modem: GNSS Not Active")
+                        # print("GNSS Not Active")
                 elif "+UGNSINF" in newline:  # GNS Data
                     # Parse Data and Update
                     try:
@@ -131,13 +136,15 @@ class ModemUnit:
                     self.__http_data[self.__http_request_last['uuid']] = http_data
                     self.__http_in_progress = False
                     if self.__log:
-                        print("HTTP Request Data:" + str(self.__http_data[self.__http_request_last['uuid']]))
+                        logging.info("Modem HTTP Request Data:" + str(self.__http_data[self.__http_request_last['uuid']]))
+                        # print("HTTP Request Data:" + str(self.__http_data[self.__http_request_last['uuid']]))
 
                 elif newline.startswith("+SAPBR"):  # Bearer Parameter Command
                     pass
                 elif self.__cmd_last == "AT+CGSN" and not newline.startswith(
                         "AT") and not self.__imei_lock:  # IMEI Reply
-                    print("Received IMEI: " + self.__imei)
+                    logging.info("Modem Received IMEI: " + self.__imei)
+                    # print("Received IMEI: " + self.__imei)
                     self.__imei = newline
                     self.__write_lock = False
                     self.__imei_lock = True
@@ -253,6 +260,7 @@ class ModemUnit:
         return self.__gps
 
     def power_toggle(self):
+        # logging.info("Power Cycling Modem")
         print("Power Cycling Modem")
         self.__power_check_time = time.time()
         subprocess.Popen(['sudo', 'raspi-gpio', 'set', '4', 'op', 'dh'])
@@ -260,7 +268,8 @@ class ModemUnit:
         subprocess.Popen(['sudo', 'raspi-gpio', 'set', '4', 'op', 'dl'])
 
     def start_sys_network(self):
-        print("Attempting to connect to network...")
+        logging.info("Attempting to connect to network...")
+        # print("Attempting to connect to network...")
         self.pon_p = subprocess.Popen(['sudo', 'pon'])
 
         while True:
@@ -270,7 +279,8 @@ class ModemUnit:
             print("Checking...")
             adapter_check = subprocess.check_output(['ip', 'addr', 'show'])
             if "ppp0" in adapter_check.decode('utf-8'):  # If ppp0 exists, create route and end
-                print("Creating route")
+                logging.info("Creating route")
+                # print("Creating route")
                 subprocess.Popen(['sudo', 'route', 'add', '-net', '0.0.0.0', 'ppp0'])
                 return
 

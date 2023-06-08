@@ -2,6 +2,7 @@ from modemUnit import ModemUnit
 import dateutil.parser
 import time
 import threading
+import logging
 
 
 class NetworkCommunication:
@@ -55,6 +56,5 @@ class NetworkCommunication:
         if self.__sos:
             newcall += "&alarm=sos"
 
-        print("Sending Ping:")
-        print("Call:" + newcall)
+        logging.info("Sending Ping: " + newcall)
         self.mUnit.http_get(newcall)

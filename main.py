@@ -14,9 +14,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.verbose:
-        logging.basicConfig(filename="main.log", level=logging.INFO)
-    else:
         logging.basicConfig(level=logging.INFO)
+    else:
+        logging.basicConfig(filename="main.log", level=logging.INFO)
 
     logging.info("--Starting Program--")
     remote = ModemUnit(log=True)

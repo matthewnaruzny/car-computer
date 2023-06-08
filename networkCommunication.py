@@ -2,6 +2,7 @@ from modemUnit import ModemUnit
 import dateutil.parser
 import time
 import threading
+import logging
 
 
 class NetworkCommunication:

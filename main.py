@@ -2,10 +2,13 @@ from modemUnit import ModemUnit
 from networkCommunication import NetworkCommunication
 from safetyCheck import SafetyCheck
 
+import logging
 import time
 
 if __name__ == '__main__':
     # Start Controllers
+    logging.basicConfig(filemode="main.log", level=logging.INFO)
+    logging.info("--Starting Program--")
     remote = ModemUnit(log=True)
 
     imei = remote.get_imei()

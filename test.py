@@ -19,7 +19,9 @@ if __name__ == "__main__":
     remote.bearer_set_settings(apn='super')
     remote.bearer_open()
 
-    logging.info("Testing GET Requests")
+    logging.info("Testing Alert Retrieval")
     g1 = remote.http_get("http://c.upnorthdevelopers.com/alerts")
+    for a in g1:
+        print(a['title'])
     logging.info("G1: " + str(g1))
     time.sleep(5)

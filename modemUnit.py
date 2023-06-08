@@ -132,11 +132,17 @@ class ModemUnit:
                     self.__exec_cmd("AT+HTTPTERM")
 
                 elif newline.startswith("+HTTPREAD"):
-                    http_data = json.loads(self.__ser.read(self.__http_size).decode('utf-8'))
-                    self.__http_data[self.__http_request_last['uuid']] = http_data
+                    http_raw_data = self.__ser.read(self.__http_size).decode('utf-8')
+                    try:
+                        http_data = json.loads(http_raw_data)
+                        self.__http_data[self.__http_request_last['uuid']] = http_data
+                    except json.decoder.JSONDecodeError:  # If decode fails, return raw data
+                        self.__http_data[self.__http_request_last['uuid']] = http_raw_data
+
                     self.__http_in_progress = False
                     if self.__log:
-                        logging.info("Modem HTTP Request Data:" + str(self.__http_data[self.__http_request_last['uuid']]))
+                        logging.info(
+                            "Modem HTTP Request Data:" + str(self.__http_data[self.__http_request_last['uuid']]))
                         # print("HTTP Request Data:" + str(self.__http_data[self.__http_request_last['uuid']]))
 
                 elif newline.startswith("+SAPBR"):  # Bearer Parameter Command

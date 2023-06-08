@@ -7,7 +7,7 @@ import time
 
 if __name__ == '__main__':
     # Start Controllers
-    logging.basicConfig(filemode="main.log", level=logging.INFO)
+    logging.basicConfig(filename="main.log", level=logging.INFO)
     logging.info("--Starting Program--")
     remote = ModemUnit(log=True)
 

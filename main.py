@@ -4,10 +4,20 @@ from safetyCheck import SafetyCheck
 
 import logging
 import time
+import argparse
 
 if __name__ == '__main__':
     # Start Controllers
-    logging.basicConfig(filename="main.log", level=logging.INFO)
+
+    parser = argparse.ArgumentParser(prog='Car Computer')
+    parser.add_argument('-v', '--verbose', action='store_true')
+    args = parser.parse_args()
+
+    if args.verbose:
+        logging.basicConfig(filename="main.log", level=logging.INFO)
+    else:
+        logging.basicConfig(level=logging.INFO)
+
     logging.info("--Starting Program--")
     remote = ModemUnit(log=True)
 

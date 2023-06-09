@@ -60,6 +60,7 @@ class NetworkCommunication:
 
         # Alarm
         if self.__sos:
+            self.mUnit.http_get("http://c.upnorthdevelopers.com/sos/?id=" + str(self.imei))
             newcall += "&alarm=sos"
 
         logging.info("Sending Ping: " + newcall)

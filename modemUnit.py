@@ -165,6 +165,7 @@ class ModemUnit:
 
             if time.time() - self.__power_check_time > 20 and self.__write_lock:  # Timeout Check - Restart and Rerun
                 self.power_toggle()
+                self.__power_check_time = time.time()
                 time.sleep(20)
                 self.__write_lock = False
                 # Clear Command Queue
@@ -177,14 +178,14 @@ class ModemUnit:
                 if self.__network_active:
                     self.network_init()
 
+                break
+
             self.__process_input()
             if not self.__write_lock:
                 if not self.__http_in_progress:  # Perform next HTTP request
                     if len(self.__http_request_queue) > 0:
                         self.__perform_next_http()
 
-                if len(self.__cmd_queue) > 0:
-                    self.__modem_write(self.__cmd_queue.pop(0))
             time.sleep(0.1)
 
     # HTTP Functions

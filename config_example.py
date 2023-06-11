@@ -23,3 +23,9 @@ mqtt_config = {
 locate_config = {
     'googlemaps_apikey': ''
 }
+
+modem_config = {
+    'apn': 'super',
+    'username': '',
+    'password': ''
+}

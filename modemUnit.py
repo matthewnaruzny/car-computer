@@ -4,6 +4,9 @@ import time
 import serial
 import json
 import uuid
+import logging
+
+import config
 
 
 class GPSData:
@@ -45,12 +48,6 @@ class ModemUnit:
         self.__gps_active = False
         self.__gps = GPSData()
 
-        # Bearer Settings
-        self.__bearer_apn = ""
-        self.__bearer_username = ""
-        self.__bearer_password = ""
-        self.__bearer_ip = ""
-
         # HTTP Vals
         self.__http_in_progress = False
         self.__http_request_queue = []
@@ -68,12 +65,11 @@ class ModemUnit:
             self.__ser.write((cmd + '\n').encode('utf-8'))
             self.__write_lock = True
             if self.__log:
-                print("Sent: " + cmd)
+                logging.info("Modem Sent: " + cmd)
             self.__cmd_last = cmd
 
             return True
         else:
-            print("Output locked")
             return False
 
     def __process_input(self):
@@ -81,7 +77,7 @@ class ModemUnit:
             while self.__ser.in_waiting:
                 newline = self.__ser.readline().decode('utf-8')
                 if self.__log:
-                    print("Received: " + newline)
+                    logging.info("Modem Received: " + newline)
 
                 newline = newline.rstrip('\r').rstrip('\n').rstrip('\r')
 
@@ -98,9 +94,9 @@ class ModemUnit:
                     self.__gps_active = ('1' in pwr)
                     self.__write_lock = False
                     if self.__gps_active:
-                        print("GNSS Active")
+                        logging.info("Modem: GNSS Active")
                     else:
-                        print("GNSS Not Active")
+                        logging.info("Modem: GNSS Not Active")
                 elif "+UGNSINF" in newline:  # GNS Data
                     # Parse Data and Update
                     try:
@@ -110,6 +106,7 @@ class ModemUnit:
                         self.__gps.lon = float(data[4])
                         self.__gps.alt = float(data[5])
                         self.__gps.speed = float(data[6])
+                        self.__gps.course = float(data[7])
                     except ValueError:
                         pass
                 elif newline.startswith("+HTTPACTION"):  # New HTTP Data
@@ -126,17 +123,23 @@ class ModemUnit:
                     self.__exec_cmd("AT+HTTPTERM")
 
                 elif newline.startswith("+HTTPREAD"):
-                    http_data = json.loads(self.__ser.read(self.__http_size).decode('utf-8'))
-                    self.__http_data[self.__http_request_last['uuid']] = http_data
+                    http_raw_data = self.__ser.read(self.__http_size).decode('utf-8')
+                    try:
+                        http_data = json.loads(http_raw_data)
+                        self.__http_data[self.__http_request_last['uuid']] = http_data
+                    except json.decoder.JSONDecodeError:  # If decode fails, return raw data
+                        self.__http_data[self.__http_request_last['uuid']] = http_raw_data
+
                     self.__http_in_progress = False
                     if self.__log:
-                        print("HTTP Request Data:" + str(self.__http_data[self.__http_request_last['uuid']]))
+                        logging.info(
+                            "Modem HTTP Request Data:" + str(self.__http_data[self.__http_request_last['uuid']]))
 
                 elif newline.startswith("+SAPBR"):  # Bearer Parameter Command
                     pass
                 elif self.__cmd_last == "AT+CGSN" and not newline.startswith(
                         "AT") and not self.__imei_lock:  # IMEI Reply
-                    print("Received IMEI: " + self.__imei)
+                    logging.info("Modem Received IMEI: " + self.__imei)
                     self.__imei = newline
                     self.__write_lock = False
                     self.__imei_lock = True
@@ -213,18 +216,9 @@ class ModemUnit:
         self.__exec_cmd('AT+SAPBR=3,' + str(cid) + ',"' + param + '","' + value + '"')
 
     def __bearer_update(self):
-        if self.__bearer_apn != "":
-            self.__bearer_set_val(1, "APN", self.__bearer_apn)  # Set APN
-        if self.__bearer_username != "":
-            self.__bearer_set_val(1, "USER", self.__bearer_username)  # Set Username
-        if self.__bearer_password != "":
-            self.__bearer_set_val(1, "PWD", self.__bearer_password)  # Password
-
-    def bearer_set_settings(self, apn="", username="", password=""):
-        self.__bearer_apn = apn
-        self.__bearer_username = username
-        self.__bearer_password = password
-        self.__bearer_update()
+        self.__bearer_set_val(1, "APN", config.modem_config['apn'])  # Set APN
+        self.__bearer_set_val(1, "USER", config.modem_config['username'])  # Set Username
+        self.__bearer_set_val(1, "PWD", config.modem_config['password'])  # Set Password
 
     def data_open(self):
         self.__exec_cmd("AT+CMEE=1")
@@ -239,6 +233,10 @@ class ModemUnit:
     def bearer_close(self):
         self.__exec_cmd("AT+SAPBR=0,1")
 
+    def network_init(self):
+        self.data_open()
+        self.bearer_open()
+
     # GPS and Location Functions
     def start_gps(self):
         self.__exec_cmd("AT+CGNSPWR=1")  # Start GNS Modem
@@ -252,24 +250,23 @@ class ModemUnit:
         return self.__gps
 
     def power_toggle(self):
-        print("Power Cycling Modem")
+        logging.warning("Power Cycling Modem")
         self.__power_check_time = time.time()
         subprocess.Popen(['sudo', 'raspi-gpio', 'set', '4', 'op', 'dh'])
         time.sleep(2)
         subprocess.Popen(['sudo', 'raspi-gpio', 'set', '4', 'op', 'dl'])
 
     def start_sys_network(self):
-        print("Attempting to connect to network...")
+        logging.info("Attempting to connect to network...")
         self.pon_p = subprocess.Popen(['sudo', 'pon'])
 
         while True:
             time.sleep(5)
 
             # Check if ppp0 exists
-            print("Checking...")
             adapter_check = subprocess.check_output(['ip', 'addr', 'show'])
             if "ppp0" in adapter_check.decode('utf-8'):  # If ppp0 exists, create route and end
-                print("Creating route")
+                logging.info("Creating route")
                 subprocess.Popen(['sudo', 'route', 'add', '-net', '0.0.0.0', 'ppp0'])
                 return
 

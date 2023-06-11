@@ -48,6 +48,9 @@ class ModemUnit:
         self.__gps_active = False
         self.__gps = GPSData()
 
+        # Network
+        self.__network_active = False
+
         # HTTP Vals
         self.__http_in_progress = False
         self.__http_request_queue = []
@@ -162,9 +165,17 @@ class ModemUnit:
 
             if time.time() - self.__power_check_time > 20 and self.__write_lock:  # Timeout Check - Restart and Rerun
                 self.power_toggle()
-                time.sleep(10)
+                time.sleep(20)
                 self.__write_lock = False
-                self.__modem_write(self.__cmd_last)
+                # Clear Command Queue
+                self.__cmd_queue.clear()
+
+                # Reinitialize as needed
+                if self.__gps_active:
+                    self.start_gps()
+
+                if self.__network_active:
+                    self.network_init()
 
             self.__process_input()
             if not self.__write_lock:
@@ -234,6 +245,7 @@ class ModemUnit:
         self.__exec_cmd("AT+SAPBR=0,1")
 
     def network_init(self):
+        self.__network_active = True
         self.data_open()
         self.bearer_open()
 

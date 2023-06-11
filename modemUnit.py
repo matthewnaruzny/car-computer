@@ -6,6 +6,8 @@ import json
 import uuid
 import logging
 
+import config
+
 
 class GPSData:
     def __init__(self):
@@ -45,12 +47,6 @@ class ModemUnit:
         # GPS Vals
         self.__gps_active = False
         self.__gps = GPSData()
-
-        # Bearer Settings
-        self.__bearer_apn = ""
-        self.__bearer_username = ""
-        self.__bearer_password = ""
-        self.__bearer_ip = ""
 
         # HTTP Vals
         self.__http_in_progress = False
@@ -227,18 +223,9 @@ class ModemUnit:
         self.__exec_cmd('AT+SAPBR=3,' + str(cid) + ',"' + param + '","' + value + '"')
 
     def __bearer_update(self):
-        if self.__bearer_apn != "":
-            self.__bearer_set_val(1, "APN", self.__bearer_apn)  # Set APN
-        if self.__bearer_username != "":
-            self.__bearer_set_val(1, "USER", self.__bearer_username)  # Set Username
-        if self.__bearer_password != "":
-            self.__bearer_set_val(1, "PWD", self.__bearer_password)  # Password
-
-    def bearer_set_settings(self, apn="", username="", password=""):
-        self.__bearer_apn = apn
-        self.__bearer_username = username
-        self.__bearer_password = password
-        self.__bearer_update()
+        self.__bearer_set_val(1, "APN", config.modem_config['apn'])  # Set APN
+        self.__bearer_set_val(1, "USER", config.modem_config['username'])  # Set Username
+        self.__bearer_set_val(1, "PWD", config.modem_config['password'])  # Set Password
 
     def data_open(self):
         self.__exec_cmd("AT+CMEE=1")
@@ -253,6 +240,10 @@ class ModemUnit:
     def bearer_close(self):
         self.__exec_cmd("AT+SAPBR=0,1")
 
+    def network_init(self):
+        self.data_open()
+        self.bearer_open()
+
     # GPS and Location Functions
     def start_gps(self):
         self.__exec_cmd("AT+CGNSPWR=1")  # Start GNS Modem
@@ -266,8 +257,8 @@ class ModemUnit:
         return self.__gps
 
     def power_toggle(self):
-        # logging.info("Power Cycling Modem")
-        print("Power Cycling Modem")
+        logging.info("Power Cycling Modem")
+        # print("Power Cycling Modem")
         self.__power_check_time = time.time()
         subprocess.Popen(['sudo', 'raspi-gpio', 'set', '4', 'op', 'dh'])
         time.sleep(2)

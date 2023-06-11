@@ -26,9 +26,7 @@ if __name__ == '__main__':
     remote.start_gps()
     gps = remote.get_gps()
 
-    remote.data_open()
-    remote.bearer_set_settings(apn='super')
-    remote.bearer_open()
+    remote.network_init()
 
     networkCommunication = NetworkCommunication(imei, remote)
     safetyCheck = SafetyCheck(networkCommunication)

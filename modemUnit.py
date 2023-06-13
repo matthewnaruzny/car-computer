@@ -250,7 +250,7 @@ class ModemUnit:
         return self.__gps
 
     def power_toggle(self):
-        logging.warning("Power Cycling Modem")
+        logging.critical("Power Cycling Modem")
         self.__power_check_time = time.time()
         subprocess.Popen(['sudo', 'raspi-gpio', 'set', '4', 'op', 'dh'])
         time.sleep(2)

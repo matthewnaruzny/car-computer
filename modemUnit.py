@@ -160,7 +160,7 @@ class ModemUnit:
 
         while self.__worker_working:
 
-            if time.time() - self.__power_check_time > 20 and self.__write_lock:  # Timeout Check - Restart and Rerun
+            if time.time() - self.__power_check_time > 60 and self.__write_lock:  # Timeout Check - Restart and Rerun
                 self.power_toggle()
                 time.sleep(10)
                 self.__write_lock = False
@@ -250,7 +250,7 @@ class ModemUnit:
         return self.__gps
 
     def power_toggle(self):
-        logging.warning("Power Cycling Modem")
+        logging.critical("Power Cycling Modem")
         self.__power_check_time = time.time()
         subprocess.Popen(['sudo', 'raspi-gpio', 'set', '4', 'op', 'dh'])
         time.sleep(2)

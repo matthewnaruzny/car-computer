@@ -23,6 +23,7 @@ class NetworkCommunication:
     def __main_thread(self):
         while True:
             time_lapsed = time.time() - self.__last_ping_time
+            self.__gps = self.mUnit.get_gps()
 
             if self.__gps is not None and self.__gps.speed > 1 and time_lapsed >= 20:
                 self.__sendPing()

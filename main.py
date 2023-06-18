@@ -5,6 +5,7 @@ from safetyCheck import SafetyCheck
 import logging
 import time
 import argparse
+import os
 
 if __name__ == '__main__':
     # Start Controllers
@@ -16,7 +17,15 @@ if __name__ == '__main__':
     if args.verbose:
         logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     else:
-        logging.basicConfig(filename="main.log", level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+        if not os.path.exists('log'):
+            os.mkdir('log')
+
+        # Find next log file increment
+        i = 0
+        while os.path.exists("log/" + str(i) + ".log"):
+            i += 1
+
+        logging.basicConfig(filename=("log/" + str(i) + ".log"), level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
     logging.info("--Starting Program--")
     remote = ModemUnit(log=True)

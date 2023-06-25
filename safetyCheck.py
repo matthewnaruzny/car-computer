@@ -36,16 +36,17 @@ class SafetyCheck:
             state = GPIO.input(self.__safetyPin)
 
             if state == 0:  # SOS Raised
-                self.buzzer.on()
                 if self.__sos_active:
                     self.networker.sos(sos=True)
                 elif self.__sos_pending:
                     if time.time() - self.__sos_pending_time > 5:
                         self.__sos_active = True
+                        self.buzzer.on()
                 else:
                     logging.warning("SOS Starting Pending")
                     self.__sos_pending = True
                     self.__sos_pending_time = time.time()
+                    self.buzzer.beep()
             else:
                 self.buzzer.off()
                 self.__sos_active = False

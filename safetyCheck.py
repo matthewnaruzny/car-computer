@@ -46,7 +46,6 @@ class SafetyCheck:
                     logging.warning("SOS Starting Pending")
                     self.__sos_pending = True
                     self.__sos_pending_time = time.time()
-                    self.buzzer.beep()
             else:
                 self.buzzer.off()
                 self.__sos_active = False

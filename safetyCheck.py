@@ -1,4 +1,5 @@
 from networkCommunication import NetworkCommunication
+from gpiozero import Buzzer
 
 import RPi.GPIO as GPIO
 import threading
@@ -14,8 +15,10 @@ class SafetyCheck:
         GPIO.setmode(GPIO.BCM)
 
         self.__safetyPin = 16
+        buzzerPin = 12
 
         GPIO.setup(self.__safetyPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        self.buzzer = Buzzer(buzzerPin)
 
         self.__sos_active = False
         self.__sos_pending = False
@@ -33,6 +36,7 @@ class SafetyCheck:
             state = GPIO.input(self.__safetyPin)
 
             if state == 0:  # SOS Raised
+                self.buzzer.on()
                 if self.__sos_active:
                     self.networker.sos(sos=True)
                 elif self.__sos_pending:
@@ -43,6 +47,7 @@ class SafetyCheck:
                     self.__sos_pending = True
                     self.__sos_pending_time = time.time()
             else:
+                self.buzzer.off()
                 self.__sos_active = False
                 self.__sos_pending = False
                 self.networker.sos(sos=False)

@@ -12,7 +12,10 @@ class SafetyCheck:
         assert isinstance(networker, NetworkCommunication)
         self.networker = networker
         GPIO.setmode(GPIO.BCM)
-        GPIO.setup(16, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+        self.__safetyPin = 16
+
+        GPIO.setup(self.__safetyPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
         self.__sos_active = False
         self.__sos_pending = False
@@ -27,7 +30,7 @@ class SafetyCheck:
     def __main_thread(self):
         while True:
             # SOS Check
-            state = GPIO.input(21)
+            state = GPIO.input(self.__safetyPin)
 
             if state == 0:  # SOS Raised
                 if self.__sos_active:

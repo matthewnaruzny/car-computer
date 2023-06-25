@@ -12,7 +12,7 @@ class SafetyCheck:
         assert isinstance(networker, NetworkCommunication)
         self.networker = networker
         GPIO.setmode(GPIO.BCM)
-        GPIO.setup(21, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(16, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
         self.__sos_active = False
         self.__sos_pending = False

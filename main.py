@@ -12,6 +12,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(prog='Car Computer')
     parser.add_argument('-v', '--verbose', action='store_true')
+    parser.add_argument('-a', '--analyze', action='store_true')
     args = parser.parse_args()
 
     if args.verbose:
@@ -37,7 +38,7 @@ if __name__ == '__main__':
 
     remote.network_init()
 
-    networkCommunication = NetworkCommunication(imei, remote)
+    networkCommunication = NetworkCommunication(imei, remote, analyze=args.analyze)
     safetyCheck = SafetyCheck(networkCommunication)
 
     while True:

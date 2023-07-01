@@ -6,8 +6,11 @@ import logging
 
 
 class NetworkCommunication:
-    def __init__(self, imei, mUnit):
+    def __init__(self, imei, mUnit, analyze=False):
         assert isinstance(mUnit, ModemUnit)
+
+        self.__analyze = analyze
+
         self.imei = imei
         self.mUnit = mUnit
         self.__sos = False
@@ -26,9 +29,13 @@ class NetworkCommunication:
             self.__gps = self.mUnit.get_gps()
 
             if self.__gps is not None and self.__gps.speed > 1 and time_lapsed >= 20:
+                if self.__analyze:
+                    print("Speed " + str(time_lapsed))
                 self.__sendPing()
                 self.__last_ping_time = time.time()
             elif time_lapsed >= 60:
+                if self.__analyze:
+                    print("No Speed " + str(time_lapsed))
                 self.__sendPing()
                 self.__last_ping_time = time.time()
 

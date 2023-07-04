@@ -160,7 +160,7 @@ class ModemUnit:
 
         while self.__worker_working:
 
-            if time.time() - self.__power_check_time > 60 and self.__write_lock:  # Timeout Check - Restart and Rerun
+            if time.time() - self.__power_check_time > 60 and self.__write_lock and not self.__modem_power:  # Timeout Check - Restart and Rerun
                 self.power_toggle()
                 time.sleep(10)
                 self.__write_lock = False

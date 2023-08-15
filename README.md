@@ -1,9 +1,9 @@
 # car-computer
-Onboard Computer providing GPS tracking and alerting abilities
+Onboard Computer providing GPS Tracking and Alerting abilities
 
 ## Features
-- GPS Tracking to Traccar (Altitude, Lat Lon, Heading, Speed)
-- SOS Alert Feature to Traccar
+- GPS Tracking and Status monitoring using an onboard Raspberry Pi interfaced with a Cellular and GPS modem.
+- SOS Alert feature through a server-side program, capable of sending out alert SMS Messages, Emails and Phone Calls.
 
 
 ### Planned Enhancements
